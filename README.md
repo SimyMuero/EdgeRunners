@@ -58,7 +58,7 @@ iPhone 定位修改與運動軌跡模擬工具 —— 內建高德地圖，用�
 ## 從原始碼執行
 
 ```bash
-git clone https://github.com/MueroSimy/EdgeRunners.git
+git clone https://github.com/simymuero/EdgeRunners.git
 cd EdgeRunners
 python -m pip install -r requirements.txt
 python app.py
