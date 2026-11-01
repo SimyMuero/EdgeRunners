@@ -1,8 +1,8 @@
-# EdgeRunners v0.5.2 — macOS 版建置說明
+﻿# EdgeRunners v0.5.3 — macOS 版建置說明
 
 這是 **macOS 版的原始碼**，需要在 Mac 上執行一次打包，才會產生可雙擊的 `EdgeRunners.app`。
 
-> 先前的 `EdgeRunners.app` 是 v0.3.1 的舊版；這份原始碼已升級到 **v0.5.2**，
+> 先前的 `EdgeRunners.app` 是 v0.3.1 的舊版；這份原始碼已升級到 **v0.5.3**，
 > 補上了「模擬跑到一半停住」、「注入失敗誤判成功」、「找不到開發者模式」等修正。
 
 ---
@@ -41,7 +41,7 @@ brew install python@3.12
 
 ### 1. 解壓縮
 
-把 `EdgeRunners_mac_src_v0.5.2.zip` 解壓到任意位置（例如 `~/Desktop/EdgeRunners`）。
+把 `EdgeRunners_mac_src_v0.5.3.zip` 解壓到任意位置（例如 `~/Desktop/EdgeRunners`）。
 
 ### 2. 開啟終端機，進入資料夾
 
@@ -151,3 +151,4 @@ EdgeRunners/
 ## 授權
 
 MIT License · 本軟體由浙江大學學生 MueroSimy 開發，完全免費開源，僅供學習交流。
+

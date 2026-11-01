@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """EdgeRunners - Phase 1 原型
 
 本機 HTTP 服務 + WebView2 視窗。
@@ -41,7 +41,7 @@ ROUTES_PATH = os.path.join(APP_DIR, 'routes.json')
 DEFAULT_GPX = r'C:\iPhoneGPS\zju_track_12km_v2.gpx' if IS_WIN else ''
 TMP_DIR = os.path.join(tempfile.gettempdir(), 'EdgeRunners')
 
-VERSION = '0.5.2'
+VERSION = '0.5.3'
 
 dev = device.DeviceManager()
 
@@ -750,6 +750,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
 

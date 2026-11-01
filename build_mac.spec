@@ -1,4 +1,4 @@
-# -*- mode: python ; coding: utf-8 -*-
+﻿# -*- mode: python ; coding: utf-8 -*-
 """macOS 打包設定（在 Mac 上執行）
 
 用法：
@@ -36,8 +36,24 @@ hiddenimports += collect_submodules('pymobiledevice3')
 # developer 指令需要 trace.codes，少了它定位與模擬會直接失敗
 datas += collect_data_files('pykdebugparser')
 
-datas += copy_metadata('pyimg4')
-datas += copy_metadata('pymobiledevice3')
+# 把所有已安裝套件的 dist-info 一起打包。
+# pymobiledevice3 會在執行時用 importlib.metadata.version() 查套件版本，
+# 少任何一個就 PackageNotFoundError（macOS 上最常見的是 apple_compress）。
+from importlib.metadata import distributions as _distributions
+
+_seen_meta = set()
+for _dist in _distributions():
+    try:
+        _name = _dist.metadata['Name']
+    except Exception:
+        continue
+    if not _name or _name.lower() in _seen_meta:
+        continue
+    _seen_meta.add(_name.lower())
+    try:
+        datas += copy_metadata(_name)
+    except Exception:
+        pass
 
 for pkg in ('pytun_pmd3', 'webview'):
     d, b, h = collect_all(pkg)
@@ -97,11 +113,12 @@ app = BUNDLE(
     info_plist={
         'CFBundleName': 'EdgeRunners',
         'CFBundleDisplayName': 'EdgeRunners',
-        'CFBundleShortVersionString': '0.5.2',
-        'CFBundleVersion': '0.5.2',
+        'CFBundleShortVersionString': '0.5.3',
+        'CFBundleVersion': '0.5.3',
         'NSHighResolutionCapable': True,
         'LSMinimumSystemVersion': '12.0',
         'NSLocalNetworkUsageDescription':
             'EdgeRunners 需要本機網路權限，才能與連接的 iPhone 建立開發者通道。',
     },
 )
+

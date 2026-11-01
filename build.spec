@@ -31,8 +31,27 @@ datas += collect_data_files('pymobiledevice3')
 hiddenimports += collect_submodules('pymobiledevice3')
 
 datas += collect_data_files('pykdebugparser')
-datas += copy_metadata('pyimg4')
-datas += copy_metadata('pymobiledevice3')
+
+# 把所有已安裝套件的 dist-info 一起打包。
+# pymobiledevice3 會在執行時用 importlib.metadata.version() 查套件版本
+# （pyimg4、apple_compress、pmd_* 等），少任何一個就 PackageNotFoundError。
+# 而且這類套件是平台相依的：apple_compress 只在 macOS 上安裝，
+# 所以逐個補會補不完 —— 直接全部打包最保險。
+from importlib.metadata import distributions as _distributions
+
+_seen_meta = set()
+for _dist in _distributions():
+    try:
+        _name = _dist.metadata['Name']
+    except Exception:
+        continue
+    if not _name or _name.lower() in _seen_meta:
+        continue
+    _seen_meta.add(_name.lower())
+    try:
+        datas += copy_metadata(_name)
+    except Exception:
+        pass
 
 for pkg in ('pytun_pmd3', 'webview'):
     d, b, h = collect_all(pkg)
