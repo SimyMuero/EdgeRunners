@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# PyInstaller
+build/
+dist/
+*.spec.bak
+
+# 使用者資料（含高德 Key，絕對不要提交）
+config.json
+routes.json
+config.json.tmp
+routes.json.tmp
+*.probe
+
+# 產生物
+說明.html
+tools/說明.html
+*.gpx
+
+# 編輯器
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

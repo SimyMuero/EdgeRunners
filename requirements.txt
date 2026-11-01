@@ -1,0 +1,6 @@
+# 執行時期依賴
+pywebview>=6.0.0
+pymobiledevice3>=11.47.0
+
+# 工具（產生說明書的截圖處理；不執行 tools/make_manual.py 可以不裝）
+Pillow>=10.0.0

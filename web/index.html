@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EdgeRunners</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <div id="map-wrap">
+    <div id="map"></div>
+    <div id="map-tools">
+      <button id="btn-map-clear" class="map-tool" title="清空路線、預覽與選點">清圖</button>
+      <button id="btn-map-home" class="map-tool" title="有路線→縮放到路線範圍；沒路線→回到開啟時的視野">復位</button>
+    </div>
+    <div id="map-notice">本軟體由浙江大學學生 MueroSimy 開發，完全免費開源，僅供學習交流，嚴禁商業與違法用途</div>
+    <div id="map-loading"><div class="spinner"></div><span>地圖載入中…</span></div>
+    <div id="map-error" hidden></div>
+    <div id="map-hint">
+      <span><b>左鍵單擊</b> 選點</span>
+      <span><b>左鍵拖曳</b> 移動地圖</span>
+      <span><b>右鍵按住拖曳</b> 畫線</span>
+      <span><b>滾輪</b> 縮放</span>
+    </div>
+    <div id="draw-badge" hidden>畫線中… 放開右鍵結束</div>
+  </div>
+
+  <aside id="panel">
+    <div class="tabs">
+      <button class="tab active" data-tab="locate">修改定位</button>
+      <button class="tab" data-tab="sim">運動模擬</button>
+      <button id="btn-settings" class="gear" title="設定（更新高德 Key）">⚙</button>
+    </div>
+
+    <div id="warn-bar" hidden></div>
+
+    <div id="status-bar">
+      <span class="dot"></span>
+      <span id="status-text">正在檢查裝置…</span>
+    </div>
+
+    <!-- ==================== 修改定位 ==================== -->
+    <section class="pane" id="pane-locate">
+      <div class="card">
+        <div class="card-title">當前選點</div>
+        <div class="coord-row">
+          <span class="label">高德</span>
+          <span id="gcj-coord" class="coord mono">—</span>
+        </div>
+        <div class="coord-row">
+          <span class="label">GPS</span>
+          <span id="wgs-coord" class="mono">—</span>
+          <button id="copy-coord" class="mini" title="複製 GPS 座標">複製</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">自選定位</div>
+        <div class="row">
+          <select id="input-crs" class="mini-select">
+            <option value="wgs">GPS</option>
+            <option value="gcj">高德</option>
+          </select>
+          <input id="locate-input" type="text" placeholder="25.0339, 121.5654">
+          <button id="locate-go" class="mini">定位</button>
+        </div>
+        <button id="save-common" class="wide ghost">★ 把當前選點加入常見定位</button>
+      </div>
+
+      <div class="card grow">
+        <div class="card-title">常見定位<span class="card-hint">長按可拖曳排序</span></div>
+        <div id="common-list" class="list"></div>
+      </div>
+
+      <div class="actions">
+        <button id="btn-inject" class="primary wide">注入該座標</button>
+      </div>
+      <div class="actions">
+        <button id="btn-clear" class="ghost wide">恢復真實定位</button>
+      </div>
+    </section>
+
+    <!-- ==================== 運動模擬 ==================== -->
+    <section class="pane" id="pane-sim" hidden>
+      <div class="card">
+        <div class="card-title">自行規劃路線</div>
+
+        <div class="field">
+          <label>速度</label>
+          <input id="speed" type="number" step="0.1" min="0.3" max="30" value="5.3">
+          <span class="unit">m/s</span>
+        </div>
+        <div class="hint" id="speed-hint">≈ 19.1 km/h ／ 配速 3'09"/km</div>
+
+        <div class="field">
+          <label>抖動</label>
+          <input id="jitter" type="range" min="0" max="3" step="0.1" value="1.2">
+          <span class="unit mono" id="jitter-val">1.2 m</span>
+        </div>
+
+        <div class="field">
+          <label>循環</label>
+          <label class="switch"><input id="loop" type="checkbox"><span class="slider"></span></label>
+          <span class="unit">次數</span>
+          <input id="times" type="number" min="1" max="99" value="1" disabled class="narrow">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">路線統計</div>
+        <div class="stat-row"><span>路線長度</span><b id="route-len">—</b></div>
+        <div class="stat-row"><span>總距離</span><b id="total-len">—</b></div>
+        <div class="stat-row"><span>預估時間</span><b id="route-time">—</b></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">已有路線</div>
+        <select id="route-select" class="wide-select">
+          <option value="">— 選擇已保存的路線 —</option>
+        </select>
+      </div>
+
+      <div class="actions">
+        <button id="btn-reset" class="ghost">清空路線</button>
+        <button id="btn-preview" class="secondary">預覽</button>
+      </div>
+      <div class="actions">
+        <button id="btn-sim" class="primary wide">開始模擬</button>
+      </div>
+
+      <div class="card" id="progress-card" hidden>
+        <div class="card-title">模擬進度</div>
+        <div class="bar"><div class="bar-fill" id="bar-fill"></div></div>
+        <div class="stat-row"><span id="prog-text">—</span><b id="prog-pct">0%</b></div>
+        <button id="btn-stop" class="danger wide">中止模擬</button>
+      </div>
+    </section>
+  </aside>
+</div>
+
+<!-- 自訂對話框 -->
+<div id="modal" hidden>
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-body" id="modal-body"></div>
+    <input id="modal-input" type="text" hidden>
+    <div class="modal-actions">
+      <button id="modal-cancel" class="ghost">取消</button>
+      <button id="modal-ok" class="primary">確定</button>
+    </div>
+  </div>
+</div>
+
+<!-- 設定（更新 Key） -->
+<div id="settings" hidden>
+  <div class="modal-box">
+    <div class="modal-title">高德地圖 Key</div>
+    <div class="modal-body">地圖載不出來時，多半是 Key 失效。到 <b>console.amap.com</b> 重新申請一組「Web端(JSAPI)」Key 貼在這裡即可。</div>
+    <label class="set-label">Key</label>
+    <input id="set-key" type="text" placeholder="貼上你的 Key（32 位英數字）">
+    <label class="set-label">安全密鑰 jscode</label>
+    <input id="set-jscode" type="text" placeholder="貼上你的安全密鑰 jscode">
+    <div class="modal-actions">
+      <button id="set-cancel" class="ghost">取消</button>
+      <button id="set-save" class="primary">儲存並重載</button>
+    </div>
+    <button id="set-diag" class="ghost wide" style="margin-top:10px">環境診斷（連不上手機時用）</button>
+    <div class="ver" id="ver-text"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

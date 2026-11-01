@@ -1,0 +1,27 @@
+{
+  "_comment": "這是範例檔。第一次啟動後程式會自動產生 config.json，Key 請按畫面右上角 ⚙ 填入，或直接改這個檔案後改名為 config.json。",
+  "amap": {
+    "key": "",
+    "jscode": ""
+  },
+  "window": {
+    "width": 1280,
+    "height": 800,
+    "x": null,
+    "y": null,
+    "maximized": false
+  },
+  "map": {
+    "lng": 120.0771,
+    "lat": 30.3074,
+    "zoom": 16
+  },
+  "common_location_file": "C:\\iPhoneGPS\\common_location.txt",
+  "common_list": [],
+  "defaults": {
+    "speed_ms": 5.3,
+    "jitter_level": 1.2,
+    "loop": false,
+    "times": 1
+  }
+}

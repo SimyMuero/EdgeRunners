@@ -1,0 +1,11 @@
+# 統一換行：原始碼一律 LF，Windows 批次檔用 CRLF
+* text=auto
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.py text eol=lf
+*.js text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.spec text eol=lf
