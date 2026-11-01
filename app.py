@@ -28,7 +28,7 @@ ROUTES_PATH = os.path.join(APP_DIR, 'routes.json')
 DEFAULT_GPX = r'C:\iPhoneGPS\zju_track_12km_v2.gpx'
 TMP_DIR = os.path.join(tempfile.gettempdir(), 'EdgeRunners')
 
-VERSION = '0.4.4'
+VERSION = '0.5.0'
 
 dev = device.DeviceManager()
 
@@ -400,6 +400,17 @@ class Handler(BaseHTTPRequestHandler):
                 self._json(res)
                 return
 
+            if route == '/api/devmode':
+                status = dev.developer_mode_status()
+                if status is True:
+                    self._json({'ok': True, 'already': True, 'status': True})
+                    return
+                res = dev.reveal_developer_mode()
+                if res.get('ok'):
+                    res['status'] = dev.developer_mode_status()
+                self._json(res)
+                return
+
             if route == '/api/simulate':
                 self._api_simulate()
                 return
@@ -700,6 +711,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
 

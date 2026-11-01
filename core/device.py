@@ -383,6 +383,39 @@ class DeviceManager:
         if p is not None:
             self._busy.clear()
 
+    # ---------------- 開發者模式 ----------------
+
+    def developer_mode_status(self):
+        """查詢開發者模式是否已啟用；無法判斷時回傳 None"""
+        for extra in ([], ['--userspace']):
+            code, out, err = self.run(_cmd('amfi', 'developer-mode-status', *extra), timeout=60)
+            text = ((out or '') + (err or '')).strip().lower()
+            if code == 0 and ('true' in text or 'false' in text):
+                return 'true' in text
+        return None
+
+    def reveal_developer_mode(self):
+        """讓「開發者模式」選項出現在手機設定裡
+
+        iOS 16 以後這個選項預設是隱藏的，要等裝置收到「開發請求」才會出現。
+        這個指令就是送出那個請求，之後使用者就能在
+        設定 → 隱私權與安全性 → 開發者模式 看到它。
+        """
+        last = ''
+        for extra in ([], ['--userspace']):
+            code, out, err = self.run(
+                _cmd('amfi', 'reveal-developer-mode', *extra), timeout=90)
+            text = (out or '') + (err or '')
+            if code == 0 and 'Traceback' not in text:
+                return {'ok': True}
+            last = text or last
+        low = last.lower()
+        if 'devicelocked' in low:
+            return {'ok': False, 'error': '手機鎖住了。請解鎖後再試。'}
+        if 'nodevice' in low or 'no device' in low:
+            return {'ok': False, 'error': '找不到裝置。請確認 USB 已連接、手機已解鎖並按過「信任」。'}
+        return {'ok': False, 'error': _friendly_error(last) or '指令失敗，請重試。'}
+
     # ---------------- 收尾 ----------------
 
     def shutdown(self):

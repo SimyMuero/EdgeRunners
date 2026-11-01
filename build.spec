@@ -1,4 +1,4 @@
-﻿# -*- mode: python ; coding: utf-8 -*-
+# -*- mode: python ; coding: utf-8 -*-
 """PyInstaller 打包設定
 
 用法：
@@ -21,6 +21,7 @@ from PyInstaller.utils.hooks import (
 
 HERE = os.path.abspath('.')
 WEB = os.path.join(HERE, 'web')
+ICON = os.path.join(HERE, 'assets', 'icon.ico')
 
 datas = [(WEB, 'web')]
 binaries = []
@@ -66,6 +67,7 @@ exe = EXE(
     strip=False,
     upx=True,
     console=False,
+    icon=ICON if os.path.exists(ICON) else None,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,

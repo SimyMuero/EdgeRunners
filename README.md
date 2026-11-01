@@ -1,5 +1,7 @@
 # EdgeRunners
 
+<img src="assets/logo.png" width="200" alt="MueroSimy's Studio">
+
 iPhone 定位修改與運動軌跡模擬工具 —— 內建高德地圖，用滑鼠點選或畫線，就能讓 iPhone 移動到任何地方。
 
 > 本軟體由浙江大學學生 MueroSimy 開發，完全免費開源，僅供學習交流，嚴禁商業與違法用途。

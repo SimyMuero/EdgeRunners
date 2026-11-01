@@ -955,6 +955,12 @@ function bindUI() {
   $('btn-map-clear').addEventListener('click', clearAll);
   $('btn-map-home').addEventListener('click', goHomeView);
 
+  // 找不到開發者模式 → 送出顯示請求
+  $('devmode-link').addEventListener('click', (ev) => {
+    ev.preventDefault();
+    doRevealDevMode();
+  });
+
   // 設定（更新 Key）
   $('btn-settings').addEventListener('click', () => {
     $('set-key').value = (state.boot && state.boot.amap && state.boot.amap.key) || '';
@@ -1073,9 +1079,11 @@ async function refreshDevice() {
 function renderDevice(d) {
   const dot = document.querySelector('#status-bar .dot');
   const txt = $('status-text');
+  const hint = $('devmode-hint');
   if (!d || !d.connected) {
     dot.className = 'dot err';
     txt.textContent = '未連接 iPhone（需已安裝 iTunes、插上 USB、解鎖並按「信任」）';
+    hint.hidden = true;
     return;
   }
   const bits = [`已連接 ${d.name || 'iPhone'}${d.ios ? ' · iOS ' + d.ios : ''}`];
@@ -1083,6 +1091,67 @@ function renderDevice(d) {
   if (d.injecting) bits.push('定位已注入');
   dot.className = 'dot ' + (d.ddi ? 'ok' : 'warn');
   txt.textContent = bits.join(' · ');
+  hint.hidden = false;
+}
+
+// ---------------------------------------------------------------- 開發者模式
+
+// iOS 16 以後「開發者模式」選項預設隱藏，要裝置收到請求才會出現
+async function doRevealDevMode() {
+  const go = await showModal({
+    title: '讓「開發者模式」出現在手機上',
+    body: 'iOS 16 以後這個選項預設是隱藏的，要等手機收到「開發請求」才會顯示。\n\n'
+        + '按「送出請求」後，請到手機上檢查：\n'
+        + '設定 → 隱私權與安全性 → 滑到最下面 → 開發者模式\n\n'
+        + '（送出前請先解鎖手機）',
+    okText: '送出請求',
+    cancelText: '取消',
+  });
+  if (!go) return;
+
+  const hint = $('devmode-link');
+  const old = hint.textContent;
+  hint.textContent = '傳送中…';
+  hint.style.pointerEvents = 'none';
+
+  let r;
+  try {
+    r = await postJson('/api/devmode', {});
+  } catch (e) {
+    r = { ok: false, error: String(e) };
+  }
+  hint.textContent = old;
+  hint.style.pointerEvents = '';
+
+  if (r && r.already) {
+    await showModal({
+      title: '開發者模式已經啟用',
+      body: '這支手機的開發者模式已經是開啟狀態，選項本來就應該存在。\n\n'
+          + '如果設定裡真的看不到，請確認：\n'
+          + '· 手機已解鎖並按過「信任」\n'
+          + '· 手機已重開機（啟用開發者模式後需要重開機才生效）',
+      hideCancel: true, okText: '知道了',
+    });
+    return;
+  }
+
+  if (r && r.ok) {
+    await showModal({
+      title: '請求已送出',
+      body: '請拿起手機，依序點：\n\n'
+          + '設定 → 隱私權與安全性 → 滑到最下面 → 開發者模式 → 打開\n\n'
+          + '打開後手機會要求重新開機，重開機後再回來使用本程式。\n\n'
+          + '若還是看不到，請把手機重新插拔一次，再按一次這個連結。',
+      hideCancel: true, okText: '知道了',
+    });
+    return;
+  }
+
+  await showModal({
+    title: '送出失敗',
+    body: (r && r.error) || '未知錯誤',
+    hideCancel: true, okText: '知道了',
+  });
 }
 
 // ---------------------------------------------------------------- 注入 / 恢復

@@ -160,7 +160,10 @@ HTML = """<!DOCTYPE html>
       <span style="color:var(--muted)">裝好後可開「工作管理員 → 服務」確認 <code>Apple Mobile Device Service</code> 狀態是「執行中」。</span></li>
   <li><b>插上 iPhone</b>，用能傳資料的 USB 線。手機解鎖後會問「要信任這部電腦嗎」，點<b>信任</b>並輸入密碼。</li>
   <li><b>開啟開發者模式</b>：設定 → 隱私權與安全性 → 滑到最下面 → 開發者模式 → 打開 → 手機重開機 → 開機後再確認一次。<br>
-      <span style="color:var(--muted)">※ 這個選項要手機<b>接過電腦並按過信任</b>之後才會出現。</span></li>
+      <span style="color:var(--muted)">※ 這個選項要手機<b>接過電腦並按過信任</b>之後才會出現。</span><br>
+      <span style="color:var(--muted)">※ iOS 16 以後這個選項<b>預設是隱藏的</b>。如果滑到底還找不到，
+      回到程式主畫面，狀態列下方會有一行「<b>找不到「開發者模式」？點此讓它出現</b>」——
+      按下去，程式會向手機送出開發請求，選項就會出現在設定裡。</span></li>
   <li><b>關掉自動鎖定</b>：設定 → 顯示與亮度 → 自動鎖定 → <b>永不</b>。<br>
       <span style="color:var(--muted)">※ 螢幕一暗，模擬就會中斷（會出現 DeviceLocked）。</span></li>
   <li><b>打開 EdgeRunners</b>。右上角狀態列應該顯示 <code>已連接 iPhone · iOS xx · DDI 已掛載</code>（綠色點）。</li>
