@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """EdgeRunners - Phase 1 原型
 
 本機 HTTP 服務 + WebView2 視窗。
@@ -15,17 +15,30 @@ import traceback
 import uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from core import coords, device, gpx, locations, settings, track, winsvc
+from core import coords, device, gpx, locations, settings, track
+
+IS_WIN = sys.platform == 'win32'
+IS_MAC = sys.platform == 'darwin'
+
+if IS_WIN:
+    from core import winsvc
+else:
+    winsvc = None          # macOS 內建 usbmuxd，不需要 Windows 服務檢查
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 FROZEN = bool(getattr(sys, 'frozen', False))
 APP_DIR = os.path.dirname(sys.executable) if FROZEN else ROOT
 BUNDLE_DIR = getattr(sys, '_MEIPASS', APP_DIR)
 
+if IS_MAC and FROZEN:
+    # macOS：設定檔放 ~/Library/Application Support，不寫進 .app 內部
+    APP_DIR = os.path.join(os.path.expanduser('~'), 'Library', 'Application Support', 'EdgeRunners')
+    os.makedirs(APP_DIR, exist_ok=True)
+
 WEB_DIR = os.path.join(BUNDLE_DIR, 'web')
 CONFIG_PATH = os.path.join(APP_DIR, 'config.json')
 ROUTES_PATH = os.path.join(APP_DIR, 'routes.json')
-DEFAULT_GPX = r'C:\iPhoneGPS\zju_track_12km_v2.gpx'
+DEFAULT_GPX = r'C:\iPhoneGPS\zju_track_12km_v2.gpx' if IS_WIN else ''
 TMP_DIR = os.path.join(tempfile.gettempdir(), 'EdgeRunners')
 
 VERSION = '0.5.2'
@@ -118,15 +131,16 @@ def health_checks():
     """
     warns = []
 
-    with DEV_LOCK:
-        usbmux_ok = DEV_STATE.get('usbmux_ok')
-    if usbmux_ok is None:                       # 監控執行緒還沒跑過第一次
-        try:
-            usbmux_ok = dev.device_summary().get('usbmux_ok', True)
-        except Exception:
-            usbmux_ok = True
-    if not usbmux_ok:
-        warns.append(winsvc.diagnose())
+    if winsvc is not None:      # 只有 Windows 需要檢查 Apple 服務（macOS 內建 usbmuxd）
+        with DEV_LOCK:
+            usbmux_ok = DEV_STATE.get('usbmux_ok')
+        if usbmux_ok is None:                       # 監控執行緒還沒跑過第一次
+            try:
+                usbmux_ok = dev.device_summary().get('usbmux_ok', True)
+            except Exception:
+                usbmux_ok = True
+        if not usbmux_ok:
+            warns.append(winsvc.diagnose())
 
     index_html = os.path.join(WEB_DIR, 'index.html')
     if not os.path.exists(index_html):
@@ -136,9 +150,11 @@ def health_checks():
         required = [
             (os.path.join(BUNDLE_DIR, 'pykdebugparser', 'trace.codes'),
              '缺少 pykdebugparser/trace.codes，定位與模擬指令會失敗'),
-            (os.path.join(BUNDLE_DIR, 'pytun_pmd3', 'wintun', 'bin', 'amd64', 'wintun.dll'),
-             '缺少 wintun.dll，無法與手機建立連線'),
         ]
+        if IS_WIN:
+            required.append(
+                (os.path.join(BUNDLE_DIR, 'pytun_pmd3', 'wintun', 'bin', 'amd64', 'wintun.dll'),
+                 '缺少 wintun.dll，無法與手機建立連線'))
         for path, msg in required:
             if not os.path.exists(path):
                 warns.append(msg)
@@ -301,7 +317,16 @@ class Handler(BaseHTTPRequestHandler):
                 return
             if self.path.startswith('/api/diagnose'):
                 try:
-                    text = winsvc.format_report()
+                    if winsvc is not None:
+                        text = winsvc.format_report()
+                    else:
+                        text = ('--- EdgeRunners 環境診斷 ---\n'
+                                '平台：macOS（內建 usbmuxd，不需要檢查 Apple 服務）\n'
+                                '版本：%s\n'
+                                '設定檔：%s\n'
+                                '裝置：%s' % (
+                                    VERSION, APP_DIR,
+                                    '已連接' if DEV_STATE.get('connected') else '未連接'))
                 except Exception as exc:
                     text = '診斷失敗：%s' % exc
                 self._json({'ok': True, 'text': text})
@@ -557,12 +582,22 @@ def serve(port=0):
 
 
 def _screen_size():
-    try:
-        import ctypes
-        return (ctypes.windll.user32.GetSystemMetrics(0),
-                ctypes.windll.user32.GetSystemMetrics(1))
-    except Exception:
-        return (1920, 1080)
+    """螢幕邏輯尺寸；判斷不出來時用 1920x1080 當保守值"""
+    if IS_WIN:
+        try:
+            import ctypes
+            return (ctypes.windll.user32.GetSystemMetrics(0),
+                    ctypes.windll.user32.GetSystemMetrics(1))
+        except Exception:
+            pass
+    if IS_MAC:
+        try:
+            from AppKit import NSScreen
+            f = NSScreen.mainScreen().frame()
+            return (int(f.size.width), int(f.size.height))
+        except Exception:
+            pass
+    return (1920, 1080)
 
 
 def sanitize_window(w):
@@ -701,10 +736,14 @@ def main():
         pass
 
     debug = '--debug' in sys.argv
-    try:
-        webview.start(gui='edgechromium', debug=debug)
-    except Exception as exc:
-        print('edgechromium 後端啟動失敗（%s），改用預設後端。' % exc, flush=True)
+    if IS_WIN:
+        try:
+            webview.start(gui='edgechromium', debug=debug)
+        except Exception as exc:
+            print('edgechromium 後端啟動失敗（%s），改用預設後端。' % exc, flush=True)
+            webview.start(debug=debug)
+    else:
+        # macOS 用 pywebview 預設的 Cocoa/WebKit 後端
         webview.start(debug=debug)
     httpd.shutdown()
 

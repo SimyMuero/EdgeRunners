@@ -1,21 +1,10 @@
 # EdgeRunners
 
-<img src="assets/logo.png" width="200" alt="MueroSimy's Studio">
-
 iPhone 定位修改與運動軌跡模擬工具 —— 內建高德地圖，用滑鼠點選或畫線，就能讓 iPhone 移動到任何地方。
 
 > 本軟體由浙江大學學生 MueroSimy 開發，完全免費開源，僅供學習交流，嚴禁商業與違法用途。
 
 ---
-
-## 下載
-
-👉 **[下載最新版本](https://github.com/simymuero/EdgeRunners/releases/latest)**
-
-下載 `EdgeRunners_vX.X.X_public.zip` → 解壓 → 雙擊 `EdgeRunners.exe`。
-**不需要安裝 Python**，但需要先裝 iTunes（見下方系統需求）。
-
-> ⚠️ 請下載 **Release** 裡的 zip，不要下載 GitHub 自動產生的 `Source code` 壓縮檔 —— 那是原始碼，沒有 exe。
 
 ## 功能
 
@@ -42,6 +31,19 @@ iPhone 定位修改與運動軌跡模擬工具 —— 內建高德地圖，用�
 程式啟動時會做**實際連線測試**（能不能跟 usbmuxd 通話）來判斷環境，而不是只看服務名稱 ——
 所以「沒裝 iTunes 但已有其他工具裝好服務」的電腦不會被誤報。
 
+## macOS 版
+
+原始碼已跨平台，macOS 可直接從原始碼打包成 `.app`（**需要在 Mac 上執行**，PyInstaller 不能跨平台編譯）：
+
+```bash
+chmod +x build_mac.sh && ./build_mac.sh
+open dist/EdgeRunners.app
+```
+
+- macOS **不需要 iTunes**（系統內建 usbmuxd）
+- 設定檔位置：`~/Library/Application Support/EdgeRunners/`
+- 詳細步驟見 **[README_MAC.md](README_MAC.md)**
+
 ## 快速開始
 
 1. **先安裝 iTunes 並重新開機**（見上方系統需求，這是最常見的失敗原因）
@@ -67,7 +69,7 @@ iPhone 定位修改與運動軌跡模擬工具 —— 內建高德地圖，用�
 ## 從原始碼執行
 
 ```bash
-git clone https://github.com/simymuero/EdgeRunners.git
+git clone https://github.com/<your-name>/EdgeRunners.git
 cd EdgeRunners
 python -m pip install -r requirements.txt
 python app.py
