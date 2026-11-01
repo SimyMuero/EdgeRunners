@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """產生 說明.html（截圖自動嵌入，單檔可攜）"""
 
 import base64
@@ -26,6 +26,29 @@ def img_b64(path, width=1200):
     return 'data:image/jpeg;base64,' + base64.b64encode(buf.getvalue()).decode('ascii')
 
 
+def png_b64(path, width=160):
+    im = Image.open(path).convert('RGB')
+    if im.width > width:
+        h = int(im.height * width / im.width)
+        im = im.resize((width, h), Image.LANCZOS)
+    buf = io.BytesIO()
+    im.save(buf, 'PNG', optimize=True)
+    return 'data:image/png;base64,' + base64.b64encode(buf.getvalue()).decode('ascii')
+
+
+def app_version():
+    """直接讀 app.py 的 VERSION，避免說明書版本號忘記同步"""
+    import re
+    app_py = os.path.join(os.path.dirname(HERE), 'app.py')
+    try:
+        src = open(app_py, encoding='utf-8').read()
+    except OSError:
+        return ''
+    m = re.search(r"^VERSION\s*=\s*'([^']+)'", src, re.M)
+    return m.group(1) if m else ''
+
+
+
 HTML = """<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -46,6 +69,7 @@ HTML = """<!DOCTYPE html>
   }
   .wrap { max-width: 940px; margin: 0 auto; }
   header { padding: 48px 0 28px; border-bottom: 1px solid var(--line); }
+  .logo { display: block; width: 132px; height: auto; margin-bottom: 16px; }
   h1 { margin: 0 0 6px; font-size: 30px; letter-spacing: .01em; }
   .sub { margin: 0; color: var(--muted); font-size: 15px; }
   .badge {
@@ -124,9 +148,10 @@ HTML = """<!DOCTYPE html>
 <div class="wrap">
 
 <header>
+  <img class="logo" src="__LOGO__" alt="MueroSimy's Studio">
   <h1>EdgeRunners</h1>
   <p class="sub">iPhone 定位修改與運動軌跡模擬工具</p>
-  <span class="badge">v0.4.4</span>
+  <span class="badge">v__VERSION__</span>
 </header>
 
 <nav>
@@ -406,9 +431,21 @@ def main():
     else:
         print('缺少截圖：', SHOT_WARN)
 
+    logo = os.path.join(os.path.dirname(HERE), 'assets', 'logo.png')
+    if os.path.exists(logo):
+        parts = parts.replace('__LOGO__', png_b64(logo))
+    else:
+        print('缺少 logo：', logo)
+        parts = parts.replace('__LOGO__', '')
+
+    ver = app_version()
+    if not ver:
+        print('警告：讀不到 app.py 的 VERSION')
+    parts = parts.replace('__VERSION__', ver)
+
     with open(OUT, 'w', encoding='utf-8') as f:
         f.write(parts)
-    print('已產生', OUT, '%.0f KB' % (os.path.getsize(OUT) / 1024))
+    print('已產生', OUT, 'v%s' % ver, '%.0f KB' % (os.path.getsize(OUT) / 1024))
 
 
 if __name__ == '__main__':
