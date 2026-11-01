@@ -8,6 +8,15 @@ iPhone 定位修改與運動軌跡模擬工具 —— 內建高德地圖，用�
 
 ---
 
+## 下載
+
+👉 **[下載最新版本](https://github.com/simymuero/EdgeRunners/releases/latest)**
+
+下載 `EdgeRunners_vX.X.X_public.zip` → 解壓 → 雙擊 `EdgeRunners.exe`。
+**不需要安裝 Python**，但需要先裝 iTunes（見下方系統需求）。
+
+> ⚠️ 請下載 **Release** 裡的 zip，不要下載 GitHub 自動產生的 `Source code` 壓縮檔 —— 那是原始碼，沒有 exe。
+
 ## 功能
 
 - **修改定位**：地圖上單擊任一位置 → 按「注入該座標」→ 手機 GPS 立刻跳過去
