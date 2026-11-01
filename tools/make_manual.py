@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """產生 說明.html（截圖自動嵌入，單檔可攜）"""
 
 import base64
@@ -413,6 +413,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
 
