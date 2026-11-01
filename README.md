@@ -6,6 +6,19 @@ iPhone 定位修改與運動軌跡模擬工具 —— 內建高德地圖，用�
 
 ---
 
+## 下載
+
+👉 **[前往 Releases 下載最新版本](https://github.com/simymuero/EdgeRunners/releases/latest)**
+
+| 平台 | 下載檔案 | 安裝方式 |
+|---|---|---|
+| **Windows** | `EdgeRunners_vX.X.X_public.zip` | 解壓 → 雙擊 `EdgeRunners.exe`（不需安裝 Python，但**需要 iTunes**） |
+| **macOS** | `EdgeRunners-X.X.X-macOS-*.zip` | 解壓 → 把 `EdgeRunners.app` 拖到「應用程式」；首次開啟需**右鍵 → 打開**（不需 iTunes） |
+
+> ⚠️ 請下載 Release 裡的 zip，**不要**下載 GitHub 自動產生的 `Source code` 壓縮檔 —— 那是原始碼，沒有執行檔。
+>
+> macOS 若想自行編譯，見 **[README_MAC.md](README_MAC.md)**。
+
 ## 功能
 
 - **修改定位**：地圖上單擊任一位置 → 按「注入該座標」→ 手機 GPS 立刻跳過去
@@ -21,7 +34,7 @@ iPhone 定位修改與運動軌跡模擬工具 —— 內建高德地圖，用�
 
 | 項目 | 需求 |
 |---|---|
-| 作業系統 | Windows 10 / 11（64 位元） |
+| 作業系統 | Windows 10 / 11（64 位元）／ macOS 12 以上 |
 | **Apple 手機通訊服務** | ⚠️ **必要**。Windows 需要 `Apple Mobile Device Service`（usbmuxd）才看得到 iPhone。<br>它**不是只有 iTunes 會裝**：Microsoft Store 的「Apple Devices」、愛思助手等第三方工具、部分筆電預裝的 Apple 軟體都可能已裝好。<br>沒有的話裝 [iTunes 官網版](https://www.apple.com/itunes/download/win64) 或 Microsoft Store 的「Apple Devices」，裝完**重新開機**。<br>程式會做**實際連線測試**判斷，不會只看服務名稱，所以能連就不會誤報。 |
 | WebView2 | Win11 內建；Win10 需安裝 [WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) |
 | 手機 | iPhone，iOS 17 以上（需開啟「開發者模式」） |
