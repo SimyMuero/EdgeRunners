@@ -25,7 +25,7 @@ iPhone 定位修改與運動軌跡模擬工具 —— 內建高德地圖，用�
 | **Apple 手機通訊服務** | ⚠️ **必要**。Windows 需要 `Apple Mobile Device Service`（usbmuxd）才看得到 iPhone。<br>它**不是只有 iTunes 會裝**：Microsoft Store 的「Apple Devices」、愛思助手等第三方工具、部分筆電預裝的 Apple 軟體都可能已裝好。<br>沒有的話裝 [iTunes 官網版](https://www.apple.com/itunes/download/win64) 或 Microsoft Store 的「Apple Devices」，裝完**重新開機**。<br>程式會做**實際連線測試**判斷，不會只看服務名稱，所以能連就不會誤報。 |
 | WebView2 | Win11 內建；Win10 需安裝 [WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) |
 | 手機 | iPhone，iOS 17 以上（需開啟「開發者模式」） |
-| 傳輸線 | 能傳資料的 USB 線 |
+| **傳輸線** | ⚠️ **必須能傳資料**（USB-C to C，或標明支援資料傳輸的線）。<br>只能充電的線會出現「手機有在充電，但電腦完全看不到裝置」—— 這是最常被誤判成程式問題的坑。<br>便宜的 A to C 線常常只接了電源線。 |
 | 網路 | 只有地圖底圖需要；定位注入與軌跡模擬**完全離線可運作** |
 
 程式啟動時會做**實際連線測試**（能不能跟 usbmuxd 通話）來判斷環境，而不是只看服務名稱 ——

@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """產生 說明.html（截圖自動嵌入，單檔可攜）"""
 
 import base64
@@ -144,11 +144,15 @@ HTML = """<!DOCTYPE html>
 <h2 id="start">第一次使用（6 步）</h2>
 
 <div class="warn">
-  <b>先決條件：必須安裝 iTunes。</b><br>
-  Windows 要靠 Apple 的 <b>Apple Mobile Device Service</b> 才認得出 iPhone，這個服務是安裝 iTunes 時一併裝的。
-  <b>沒裝 iTunes，程式完全抓不到手機，所有功能都不能用。</b><br><br>
-  下載：<b>apple.com/itunes/download/win64</b>（裝完<b>務必重新開機</b>）<br>
-  <span style="color:#8e2f2f">※ 不要用 Microsoft Store 的「Apple Devices」App —— 它的服務不支援 Wi-Fi 連線，容易出問題。</span>
+  <b>兩個先決條件，缺一不可。</b><br><br>
+  <b>① Apple 手機通訊服務（usbmuxd）</b><br>
+  Windows 靠它才認得出 iPhone，通常是安裝 Apple 軟體時一併裝好的 ——
+  iTunes 官網版、Microsoft Store 的「Apple Devices」、或愛思助手等第三方工具都會裝。
+  電腦上完全沒有 Apple 軟體的話，請裝 <b>iTunes 官網版</b>（apple.com/itunes/download/win64），裝完<b>務必重新開機</b>。<br>
+  <span style="color:var(--muted)">※ 程式啟動時會做實際連線測試，並依實際狀況給對應建議。</span><br><br>
+  <b>② 能傳資料的 USB 線</b><br>
+  只能充電的線會出現「<b>手機有在充電，但電腦完全看不到裝置</b>」，這是最容易被誤判成程式問題的坑。<br>
+  請用 <b>C to C</b> 線，或標明支援資料傳輸的線；便宜的 A to C 線常常只接了電源線。
 </div>
 
 <ol>
@@ -168,8 +172,9 @@ HTML = """<!DOCTYPE html>
 </div>
 
 <div class="note">
-  <b>程式一開就跳紅字「未安裝 iTunes」？</b> 那代表偵測不到 Apple Mobile Device Service。
-  裝完 iTunes <b>一定要重新開機</b>，服務才會啟動。
+  <b>程式一開就跳紅字？</b> 代表連不上手機通訊服務（usbmuxd）或缺少必要檔案。
+  紅字會依實際狀況給對應建議（沒裝 Apple 軟體 / 裝了但服務沒起來 / 服務卡住 / 線材問題），
+  照著做即可；也可以按紅字下方的「<b>複製診斷資訊</b>」把環境資料貼給開發者。
 </div>
 
 <h2 id="ui">介面導覽</h2>
@@ -279,7 +284,25 @@ HTML = """<!DOCTYPE html>
       <td>服務卡住了。重開機，或到 services.msc 對它按「重新啟動」</td></tr>
 </table>
 
-<p>以上都試過仍不行，再檢查：換一條能傳資料的 USB 線、換 USB 孔、手機解鎖並按「信任」。</p>
+<p>以上都試過仍不行，再檢查下面這一項 —— <b>這是最常被誤判成程式問題的坑</b>。</p>
+
+<h3>Q0-2. 手機在充電，但電腦完全看不到裝置</h3>
+<p><b>九成是線材問題。</b>USB 線裡面有四條關鍵線：VBUS（+5V）、GND、D+、D-。
+便宜的「充電線」常常<b>只接了電源兩條</b>，D+/D- 根本沒接 ——
+手機看到 5V 就開始充電，但沒辦法被電腦辨識。</p>
+
+<table>
+  <tr><th>線材</th><th>狀況</th></tr>
+  <tr><td><b>C to C</b>（USB-C 對 USB-C）</td><td>✅ 幾乎一定含資料線，最保險</td></tr>
+  <tr><td><b>A to C</b>，有品牌、標明資料傳輸</td><td>✅ 可用</td></tr>
+  <tr><td><b>A to C</b>，便宜的充電線</td><td>❌ 常常只有電源，會出現「能充電、看不到裝置」</td></tr>
+</table>
+
+<p><b>30 秒自我驗證：</b>拿同一條線去接一支 Android 手機或 USB-C 隨身碟。<br>
+   如果電腦照樣看不到 → <b>就是線的問題，換線結案</b>，跟軟體無關。</p>
+
+<p>另外也可能不是線，而是<b>那個 USB 孔只供電</b>：機殼前置面板、螢幕上的 USB、廉價 HUB 常見。
+   遇到就先換到主機板後方的 USB 孔試試。</p>
 
 <figure>
   <img src="__WARN__" alt="連不上手機通訊服務的警告">
