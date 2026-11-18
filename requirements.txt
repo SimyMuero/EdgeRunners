@@ -1,6 +1,10 @@
 # 執行時期依賴
+#
+# pymobiledevice3 必須 11.58.0 以上：較舊的版本把開發者映像檔（DDI）的版本號
+# 寫死在程式裡，Apple 更新映像檔後會出現「掛載回報成功卻沒真的掛上」，
+# 導致定位注入永遠停在準備階段。
+pymobiledevice3>=11.58.0
 pywebview>=6.0.0
-pymobiledevice3>=11.47.0
 
 # 工具（產生說明書的截圖處理；不執行 tools/make_manual.py 可以不裝）
 Pillow>=10.0.0

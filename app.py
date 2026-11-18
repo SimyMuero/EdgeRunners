@@ -41,7 +41,7 @@ ROUTES_PATH = os.path.join(APP_DIR, 'routes.json')
 DEFAULT_GPX = r'C:\iPhoneGPS\zju_track_12km_v2.gpx' if IS_WIN else ''
 TMP_DIR = os.path.join(tempfile.gettempdir(), 'EdgeRunners')
 
-VERSION = '0.5.3'
+VERSION = '0.5.4'
 
 dev = device.DeviceManager()
 
@@ -750,6 +750,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
 

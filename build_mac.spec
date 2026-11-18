@@ -113,12 +113,13 @@ app = BUNDLE(
     info_plist={
         'CFBundleName': 'EdgeRunners',
         'CFBundleDisplayName': 'EdgeRunners',
-        'CFBundleShortVersionString': '0.5.3',
-        'CFBundleVersion': '0.5.3',
+        'CFBundleShortVersionString': '0.5.4',
+        'CFBundleVersion': '0.5.4',
         'NSHighResolutionCapable': True,
         'LSMinimumSystemVersion': '12.0',
         'NSLocalNetworkUsageDescription':
             'EdgeRunners 需要本機網路權限，才能與連接的 iPhone 建立開發者通道。',
     },
 )
+
 

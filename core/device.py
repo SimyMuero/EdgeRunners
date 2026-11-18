@@ -259,9 +259,22 @@ class DeviceManager:
         text = (out or '') + (err or '')
         self.invalidate_cache()
 
+        # 掛載指令「回報成功」不代表真的掛上：DDI 版本與 Apple 現行映像不符時，
+        # 指令會印出成功訊息卻沒有實際動作。所以一律回頭確認一次。
         if code == 0 and 'Traceback' not in text:
-            self._ddi_cache = (time.time(), True)
-            return {'ok': True, 'mounted': True}
+            for _ in range(3):                     # 掛載後狀態更新可能有一點延遲
+                if self.ddi_mounted(use_cache=False):
+                    self._ddi_cache = (time.time(), True)
+                    return {'ok': True, 'mounted': True}
+                time.sleep(1.0)
+            if 'unexpected ProductBuildVersion' in text:
+                return {'ok': False, 'error':
+                        '開發者映像檔版本不符。\n'
+                        'Apple 已更新映像檔，但本程式內建的 pymobiledevice3 版本較舊。\n'
+                        '這需要更新程式本身，不是你的操作問題。'}
+            return {'ok': False, 'error':
+                    '掛載開發者映像檔失敗（指令回報成功，但裝置上沒有掛載）。\n'
+                    '請重新插拔 USB 後再試一次。'}
         if 'DeviceLocked' in text:
             return {'ok': False, 'error': '手機鎖住了。請解鎖並保持螢幕亮著，再試一次。'}
         if 'developer mode' in text.lower():
